@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asjad Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070a;
+    --panel:#0b0f14;
+    --line:#16313a;
+    --cyan:#22e6e6;
+    --green:#3df08a;
+    --red:#ff4d5e;
+    --amber:#f0c419;
+    --text:#d9f3f3;
+    --muted:#5d7a80;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Rubik',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .brand-font{font-family:'Orbitron',sans-serif;}
+  .screen{
+    min-height:100vh;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:24px;
+  }
+  .screen.active{display:flex;}
+
+  /* ---------- SPLASH ---------- */
+  .splash-ring{
+    width:140px;height:140px;border-radius:50%;
+    border:2px dashed var(--cyan);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 40px rgba(34,230,230,.25);
+    animation:spin 12s linear infinite;
+    margin-bottom:28px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .splash-core{
+    width:100px;height:100px;border-radius:50%;
+    background:radial-gradient(circle at 50% 40%, #0e1f1f, #03100f);
+    border:2px solid var(--green);
+    display:flex;align-items:center;justify-content:center;
+    font-size:38px;
+    box-shadow:0 0 30px rgba(61,240,138,.35) inset;
+  }
+  .brand-title{
+    font-size:30px;letter-spacing:4px;color:var(--cyan);
+    text-shadow:0 0 18px rgba(34,230,230,.6);
+    margin:6px 0 10px;
+  }
+  .brand-bar{
+    width:160px;height:3px;border-radius:3px;
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    margin-bottom:10px;
+  }
+  .muted-caps{color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ---------- CARD ---------- */
+  .card{
+    background:var(--panel);
+    border:1px solid var(--cyan);
+    border-radius:14px;
+    box-shadow:0 0 35px rgba(34,230,230,.12);
+    padding:36px 30px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+  }
+  .card.danger{border-color:var(--red);box-shadow:0 0 35px rgba(255,77,94,.15);}
+  .icon-door{font-size:46px;margin-bottom:6px;}
+  .btn{
+    display:block;width:100%;border:none;border-radius:10px;
+    padding:14px 16px;font-family:'Orbitron',sans-serif;font-weight:700;
+    letter-spacing:1px;font-size:14px;cursor:pointer;margin-top:14px;
+    transition:transform .15s, opacity .15s;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-guest{background:linear-gradient(90deg,var(--cyan),var(--amber));color:#04130f;}
+  .btn-tg{background:#2596d8;color:#fff;}
+  .btn-wa{background:#23c45e;color:#04130f;}
+  .btn-flat{background:#0e1a1f;color:var(--muted);border:1px solid var(--line);}
+  .btn-flat.done{color:var(--green);border-color:var(--green);}
+  .btn-enter{background:var(--cyan);color:#04130f;}
+  .btn-admin{background:var(--red);color:#1a0506;}
+  .small-note{font-size:12px;color:var(--muted);margin-top:18px;letter-spacing:1px;}
+
+  /* ---------- DASHBOARD ---------- */
+  #dashboard-screen{align-items:stretch;justify-content:flex-start;padding:0;}
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 22px;border-bottom:1px solid var(--line);
+  }
+  .topbar h1{font-size:20px;margin:0;color:var(--green);letter-spacing:1px;}
+  .topbar .sub{font-size:11px;color:var(--muted);letter-spacing:1px;}
+  .pill{
+    border:1px solid var(--green);color:var(--green);font-size:11px;
+    padding:5px 12px;border-radius:20px;letter-spacing:1px;
+  }
+  .search{
+    margin:18px 22px 6px;background:#0b1116;border:1px solid var(--line);
+    border-radius:30px;padding:12px 18px;color:var(--muted);font-size:13px;
+  }
+  .section-label{
+    margin:22px 22px 10px;font-size:12px;letter-spacing:2px;color:var(--muted);
+    border-bottom:1px solid var(--line);padding-bottom:10px;text-transform:uppercase;
+  }
+  .content-area{flex:1;padding-bottom:90px;}
+  .tab-panel{display:none;padding:0 22px;}
+  .tab-panel.active{display:block;}
+  .empty-state{
+    text-align:center;color:var(--muted);padding:60px 10px;font-size:13px;
+  }
+  .empty-state .glyph{font-size:34px;display:block;margin-bottom:10px;opacity:.6;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px;}
+  .apk-card{
+    background:#0b1116;border:1px solid var(--line);border-radius:14px;
+    padding:14px 10px;text-align:center;position:relative;cursor:pointer;
+    transition:border-color .15s;
+  }
+  .apk-card:hover{border-color:var(--cyan);}
+  .apk-badge{
+    position:absolute;top:8px;right:8px;background:var(--amber);color:#1a1402;
+    font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.5px;
+  }
+  .apk-icon{
+    width:54px;height:54px;border-radius:12px;margin:6px auto 10px;
+    background:#11181d;display:flex;align-items:center;justify-content:center;
+    font-size:26px;overflow:hidden;
+  }
+  .apk-icon img{width:100%;height:100%;object-fit:cover;}
+  .apk-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .list-row{
+    display:flex;align-items:center;gap:14px;background:#0b1116;
+    border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;
+  }
+  .list-row .emoji{font-size:22px;width:34px;text-align:center;}
+  .list-row .meta{flex:1;}
+  .list-row .meta .t{font-size:14px;color:var(--text);}
+  .list-row .meta .d{font-size:12px;color:var(--muted);margin-top:2px;}
+  .list-row a.go{
+    font-size:11px;color:var(--cyan);border:1px solid var(--cyan);
+    padding:6px 12px;border-radius:8px;text-decoration:none;letter-spacing:.5px;
+  }
+
+  .bottom-nav{
+    position:fixed;bottom:0;left:0;right:0;background:var(--panel);
+    border-top:1px solid var(--line);display:flex;justify-content:space-around;
+    padding:10px 0 14px;
+  }
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);
+    font-size:11px;cursor:pointer;letter-spacing:.5px;}
+  .nav-item .ni{font-size:18px;}
+  .nav-item.active{color:var(--cyan);}
+
+  .profile-box{padding:30px 22px 0;text-align:center;}
+  .profile-avatar{
+    width:78px;height:78px;border-radius:50%;background:#0e1a1f;border:2px solid var(--cyan);
+    display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 12px;
+  }
+  .hash-card{
+    background:#0b1116;border:1px solid var(--line);border-radius:12px;
+    margin:24px 22px 0;padding:18px;
+  }
+  .hash-card .row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;
+    border-bottom:1px solid var(--line);}
+  .hash-card .row:last-child{border-bottom:none;}
+  .hash-card .row span:first-child{color:var(--muted);}
+  .admin-link{margin:26px auto 0;display:inline-block;font-size:11px;color:var(--muted);
+    letter-spacing:1px;cursor:pointer;border-bottom:1px dotted var(--muted);}
+
+  /* ---------- ADMIN ---------- */
+  #admin-screen{align-items:stretch;justify-content:flex-start;padding:0;background:var(--bg);}
+  .admin-top{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;
+    border-bottom:1px solid var(--red);}
+  .admin-top h2{color:var(--red);font-size:18px;margin:0;letter-spacing:1px;}
+  .admin-tabs{display:flex;gap:8px;padding:14px 22px 0;flex-wrap:wrap;}
+  .admin-tab{
+    font-size:12px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);
+    color:var(--muted);cursor:pointer;letter-spacing:.5px;
+  }
+  .admin-tab.active{color:var(--cyan);border-color:var(--cyan);}
+  .admin-body{padding:18px 22px 60px;}
+  .form-grid{display:grid;gap:10px;margin-bottom:18px;}
+  .form-grid input, .form-grid textarea{
+    width:100%;background:#0b1116;border:1px solid var(--line);border-radius:8px;
+    color:var(--text);padding:11px 12px;font-size:13px;font-family:inherit;
+  }
+  .form-grid input:focus, .form-grid textarea:focus{outline:none;border-color:var(--cyan);}
+  .btn-add{background:var(--green);color:#04130f;}
+  .admin-row{
+    display:flex;align-items:center;gap:12px;background:#0b1116;border:1px solid var(--line);
+    border-radius:10px;padding:12px;margin-bottom:10px;
+  }
+  .admin-row .ic{width:38px;height:38px;border-radius:8px;background:#11181d;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:18px;}
+  .admin-row .ic img{width:100%;height:100%;object-fit:cover;}
+  .admin-row .info{flex:1;min-width:0;}
+  .admin-row .info .n{font-size:13px;color:var(--text);}
+  .admin-row .info .l{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;}
+  .del-btn{background:none;border:1px solid var(--red);color:var(--red);border-radius:7px;
+    padding:7px 10px;font-size:11px;cursor:pointer;}
+  .field-label{font-size:11px;color:var(--muted);letter-spacing:.5px;margin-bottom:-4px;}
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--green);color:#04130f;padding:10px 20px;border-radius:30px;
+    font-size:12px;font-weight:600;letter-spacing:.5px;opacity:0;transition:opacity .25s;
+    pointer-events:none;z-index:50;
+  }
+  .toast.show{opacity:1;}
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;
+    align-items:center;justify-content:center;z-index:40;padding:20px;
+  }
+  .modal-overlay.active{display:flex;}
+
+  /* ---------- APK DETAIL SHEET ---------- */
+  .sheet-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;
+    align-items:flex-end;justify-content:center;z-index:45;
+  }
+  .sheet-overlay.active{display:flex;}
+  .sheet{
+    background:var(--panel);
+    border-top:1px solid var(--line);
+    border-radius:22px 22px 0 0;
+    width:100%;max-width:480px;
+    padding:14px 26px 30px;
+    text-align:center;
+    position:relative;
+    animation:sheetUp .22s ease-out;
+  }
+  @keyframes sheetUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .sheet-handle{width:40px;height:4px;background:var(--line);border-radius:3px;margin:0 auto 18px;}
+  .sheet-close{
+    position:absolute;top:14px;right:18px;width:30px;height:30px;border-radius:50%;
+    background:#11181d;border:1px solid var(--line);color:var(--muted);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;
+  }
+  .sheet-icon{
+    width:84px;height:84px;border-radius:20px;margin:6px auto 16px;background:#11181d;
+    display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .sheet-icon img{width:100%;height:100%;object-fit:cover;}
+  .sheet-name{font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;}
+  .sheet-pill{
+    display:inline-block;background:#0e1a1f;border:1px solid var(--green);color:var(--green);
+    font-size:11px;padding:5px 14px;border-radius:20px;letter-spacing:.5px;margin-bottom:16px;
+  }
+  .sheet-note{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:22px;padding:0 6px;}
+  .btn-download{
+    background:linear-gradient(90deg,var(--amber),#f0a419);color:#1a1402;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- SPLASH -->
+<div class="screen active" id="splash-screen">
+  <div class="splash-ring"><div class="splash-core" id="splash-core"><img id="splash-logo-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:none;"><span id="splash-emoji-fallback">🛠️</span></div></div>
+  <div class="brand-title brand-font" id="splash-brand">ASJAD TOOLKIT</div>
+  <div class="brand-bar"></div>
+  <div class="muted-caps" id="splash-status">Authenticating database...</div>
+</div>
+
+<!-- PUBLIC ACCESS -->
+<div class="screen" id="access-screen">
+  <div class="card">
+    <div class="icon-door">🚪</div>
+    <h2 class="brand-font" style="color:var(--green);letter-spacing:1px;margin:10px 0 4px;">PUBLIC ACCESS</h2>
+    <div class="muted-caps" style="text-transform:none;letter-spacing:0;font-size:13px;">Key system disabled by administrator.</div>
+    <button class="btn btn-guest" id="continue-guest-btn">CONTINUE AS GUEST</button>
+    <div class="small-note" id="access-credit">DEVELOPED BY ASJAD</div>
+  </div>
+</div>
+
+<!-- VERIFICATION -->
+<div class="screen" id="verify-screen">
+  <div class="card danger">
+    <div class="icon-door" style="color:var(--red);">🔒</div>
+    <h2 style="margin:10px 0 14px;">Verification Required</h2>
+    <div style="background:#0e0a0a;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);">
+      Join our official channel to unlock the tools and get latest updates!
+    </div>
+    <button class="btn btn-tg" id="join-tg-btn">📡 Join Telegram</button>
+    <button class="btn btn-wa" id="join-wa-btn">💬 Join WhatsApp</button>
+    <button class="btn btn-flat" id="verify-status-btn">Verify Join Status</button>
+    <button class="btn btn-enter" id="enter-vault-btn" style="display:none;">Enter Vault Now</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="dashboard-screen">
+  <div class="topbar">
+    <div>
+      <h1 class="brand-font" id="dash-brand">Asjad Vault</h1>
+      <div class="sub">Public Guest</div>
+    </div>
+    <div class="pill">Secure</div>
+  </div>
+  <input class="search" id="search-input" placeholder="Search...">
+  <div class="content-area">
+
+    <div class="tab-panel active" id="panel-tools">
+      <div class="section-label">HTML Modules</div>
+      <div id="tools-list"></div>
+    </div>
+
+    <div class="tab-panel" id="panel-apks">
+      <div class="section-label">APKs &amp; Web Apps</div>
+      <div class="grid" id="apks-grid"></div>
+    </div>
+
+    <div class="tab-panel" id="panel-courses">
+      <div class="section-label">Learning Hub</div>
+      <div id="courses-list"></div>
+    </div>
+
+    <div class="tab-panel" id="panel-profile">
+      <div class="profile-box">
+        <div class="profile-avatar">🙂</div>
+        <div style="color:var(--cyan);font-size:17px;font-weight:600;">Public Guest</div>
+        <div class="pill" style="margin-top:8px;display:inline-block;">Active Session</div>
+      </div>
+      <div class="hash-card">
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;">🔗 SECURITY HASH</div>
+        <div class="row"><span>Key Signature</span><span>GUEST_MODE</span></div>
+        <div class="row"><span>Usage Counter</span><span>∞</span></div>
+        <div class="row"><span>Expiration Date</span><span>Never</span></div>
+      </div>
+      <div style="text-align:center;">
+        <button class="btn" style="max-width:380px;background:#1a0506;color:var(--red);border:1px solid var(--red);" id="terminate-btn">⏻ Terminate Session Securely</button>
+        <div class="admin-link" id="admin-link">Admin Login</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item active" data-tab="tools"><span class="ni">{ }</span>Tools</div>
+    <div class="nav-item" data-tab="apks"><span class="ni">📦</span>APKs</div>
+    <div class="nav-item" data-tab="courses"><span class="ni">🎓</span>Courses</div>
+    <div class="nav-item" data-tab="profile"><span class="ni">👤</span>Profile</div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-overlay" id="admin-modal">
+  <div class="card danger" style="max-width:320px;">
+    <div class="icon-door" style="color:var(--red);">🛡️</div>
+    <h2 style="margin:8px 0 14px;">Admin Login</h2>
+    <div class="form-grid">
+      <input type="password" id="admin-pass-input" placeholder="Admin password">
+    </div>
+    <button class="btn btn-admin" id="admin-login-btn">Unlock Admin Panel</button>
+    <button class="btn btn-flat" id="admin-cancel-btn">Cancel</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="screen" id="admin-screen">
+  <div class="admin-top">
+    <h2>⚙ Admin Panel</h2>
+    <div class="del-btn" id="admin-exit-btn" style="border-color:var(--muted);color:var(--muted);">Exit</div>
+  </div>
+  <div class="admin-tabs">
+    <div class="admin-tab active" data-atab="apks">APKs</div>
+    <div class="admin-tab" data-atab="tools">Tools</div>
+    <div class="admin-tab" data-atab="courses">Courses</div>
+    <div class="admin-tab" data-atab="settings">Settings</div>
+  </div>
+  <div class="admin-body">
+
+    <div class="admin-panel-tab active" id="atab-apks">
+      <div class="form-grid">
+        <div class="field-label">App name</div>
+        <input id="apk-name" placeholder="e.g. My App">
+        <div class="field-label">Upload app icon/logo (recommended)</div>
+        <input type="file" id="apk-icon-file" accept="image/*">
+        <div id="apk-icon-preview" style="display:flex;justify-content:center;margin-top:4px;"></div>
+        <div class="field-label">Or paste icon image URL instead</div>
+        <input id="apk-icon" placeholder="https://...">
+        <div class="field-label">Download / open link</div>
+        <input id="apk-link" placeholder="https://...">
+        <div class="field-label">Badge text</div>
+        <input id="apk-badge" placeholder="APK/APP" value="APK/APP">
+      </div>
+      <button class="btn btn-add" id="apk-add-btn">+ Add APK</button>
+      <div style="margin-top:20px;" id="apk-admin-list"></div>
+    </div>
+
+    <div class="admin-panel-tab" id="atab-tools">
+      <div class="form-grid">
+        <div class="field-label">Tool name</div>
+        <input id="tool-name" placeholder="e.g. Link Generator">
+        <div class="field-label">Emoji icon</div>
+        <input id="tool-icon" placeholder="🔧" value="🔧">
+        <div class="field-label">Link / URL</div>
+        <input id="tool-link" placeholder="https://...">
+      </div>
+      <button class="btn btn-add" id="tool-add-btn">+ Add Tool</button>
+      <div style="margin-top:20px;" id="tool-admin-list"></div>
+    </div>
+
+    <div class="admin-panel-tab" id="atab-courses">
+      <div class="form-grid">
+        <div class="field-label">Course name</div>
+        <input id="course-name" placeholder="e.g. Editing Basics">
+        <div class="field-label">Short description</div>
+        <input id="course-desc" placeholder="What this course covers">
+        <div class="field-label">Link / URL</div>
+        <input id="course-link" placeholder="https://...">
+      </div>
+      <button class="btn btn-add" id="course-add-btn">+ Add Course</button>
+      <div style="margin-top:20px;" id="course-admin-list"></div>
+    </div>
+
+    <div class="admin-panel-tab" id="atab-settings">
+      <div class="form-grid">
+        <div class="field-label">Brand name</div>
+        <input id="set-brand" placeholder="Asjad Toolkit">
+        <div class="field-label">Splash screen logo (upload an image)</div>
+        <input type="file" id="set-logo" accept="image/*">
+        <div id="set-logo-preview" style="display:flex;justify-content:center;margin-top:6px;"></div>
+        <div class="field-label">Telegram channel link</div>
+        <input id="set-tg" placeholder="https://t.me/...">
+        <div class="field-label">WhatsApp channel link</div>
+        <input id="set-wa" placeholder="https://chat.whatsapp.com/...">
+        <div class="field-label">New admin password (leave blank to keep current)</div>
+        <input type="password" id="set-pass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-add" id="settings-save-btn">Save Settings</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- APK DETAIL SHEET -->
+<div class="sheet-overlay" id="apk-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-close" id="sheet-close-btn">✕</div>
+    <div class="sheet-handle"></div>
+    <div class="sheet-icon" id="sheet-icon"></div>
+    <div class="sheet-name" id="sheet-name"></div>
+    <div class="sheet-pill">✔ Verified Secure Link</div>
+    <div class="sheet-note">Download and install the official file to access the content. Make sure to allow installations from unknown sources if prompted.</div>
+    <button class="btn btn-download" id="sheet-download-btn">⬇ Download File</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_LOGO = "data:image/jpeg;base64,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";
+const STORAGE_KEY = 'asjad-toolkit-data';
+let data = {
+  brand: 'ASJAD TOOLKIT',
+  telegramLink: 'https://wa.link/c5h6eg',
+  whatsappLink: 'https://wa.link/lh41a9',
+  adminPassword: 'admin123',
+  splashLogo: '',
+  apks: [],
+  tools: [],
+  courses: []
+};
+let verified = { tg: false, wa: false };
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      data = Object.assign(data, parsed);
+    }
+  }catch(e){
+    console.log('No existing data found, using defaults.');
+  }
+  applyBranding();
+  renderAll();
+}
+
+async function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }catch(e){
+    console.error('Storage error:', e);
+    showToast('⚠ Save error (storage may be full)');
+  }
+}
+
+function applyBranding(){
+  document.getElementById('splash-brand').textContent = data.brand;
+  document.getElementById('dash-brand').textContent = data.brand.replace(/toolkit/i,'Vault').trim() || (data.brand + ' Vault');
+  document.title = data.brand;
+  const logoSrc = data.splashLogo || DEFAULT_LOGO;
+  const img = document.getElementById('splash-logo-img');
+  const fallback = document.getElementById('splash-emoji-fallback');
+  if(logoSrc && logoSrc.indexOf('REPLACE') === -1){
+    img.src = logoSrc;
+    img.style.display = 'block';
+    fallback.style.display = 'none';
+  }else{
+    img.style.display = 'none';
+    fallback.style.display = 'block';
+  }
+}
+
+function uid(){ return 'id-' + Math.random().toString(36).slice(2,9); }
+
+/* ---------- RENDER: PUBLIC VIEWS ---------- */
+function renderAll(){
+  renderApksGrid();
+  renderToolsList();
+  renderCoursesList();
+  renderApkAdminList();
+  renderToolAdminList();
+  renderCourseAdminList();
+}
+
+function renderApksGrid(){
+  const grid = document.getElementById('apks-grid');
+  if(data.apks.length === 0){
+    grid.outerHTML = `<div class="empty-state" id="apks-grid"><span class="glyph">📦</span>No APKs added yet.</div>`;
+    return;
+  }
+  if(!document.getElementById('apks-grid').classList.contains('grid')){
+    document.getElementById('apks-grid').outerHTML = `<div class="grid" id="apks-grid"></div>`;
+  }
+  const g = document.getElementById('apks-grid');
+  g.innerHTML = data.apks.map(a => `
+    <div class="apk-card" data-apk-id="${a.id}">
+      <div class="apk-badge">${escapeHtml(a.badge||'APK/APP')}</div>
+      <div class="apk-icon">${a.icon ? `<img src="${escapeAttr(a.icon)}" alt="">` : '📱'}</div>
+      <div class="apk-name">${escapeHtml(a.name)}</div>
+    </div>
+  `).join('');
+  g.querySelectorAll('.apk-card').forEach(card => {
+    card.addEventListener('click', () => openApkSheet(card.dataset.apkId));
+  });
+}
+
+function renderToolsList(){
+  const el = document.getElementById('tools-list');
+  if(data.tools.length === 0){
+    el.innerHTML = `<div class="empty-state"><span class="glyph">{ }</span>No HTML tools assigned.</div>`;
+    return;
+  }
+  el.innerHTML = data.tools.map(t => `
+    <div class="list-row">
+      <div class="emoji">${escapeHtml(t.icon||'🔧')}</div>
+      <div class="meta"><div class="t">${escapeHtml(t.name)}</div></div>
+      <a class="go" href="${escapeAttr(t.link||'#')}" target="_blank">Open</a>
+    </div>
+  `).join('');
+}
+
+function renderCoursesList(){
+  const el = document.getElementById('courses-list');
+  if(data.courses.length === 0){
+    el.innerHTML = `<div class="empty-state"><span class="glyph">🎓</span>No courses available yet.</div>`;
+    return;
+  }
+  el.innerHTML = data.courses.map(c => `
+    <div class="list-row">
+      <div class="emoji">🎓</div>
+      <div class="meta"><div class="t">${escapeHtml(c.name)}</div><div class="d">${escapeHtml(c.desc||'')}</div></div>
+      <a class="go" href="${escapeAttr(c.link||'#')}" target="_blank">Open</a>
+    </div>
+  `).join('');
+}
+
+/* ---------- RENDER: ADMIN LISTS ---------- */
+function renderApkAdminList(){
+  const el = document.getElementById('apk-admin-list');
+  if(data.apks.length===0){ el.innerHTML = `<div class="empty-state">No APKs yet — add one above.</div>`; return; }
+  el.innerHTML = data.apks.map(a => `
+    <div class="admin-row">
+      <div class="ic">${a.icon ? `<img src="${escapeAttr(a.icon)}" alt="">` : '📱'}</div>
+      <div class="info"><div class="n">${escapeHtml(a.name)}</div><div class="l">${escapeHtml(a.link||'')}</div></div>
+      <button class="del-btn" onclick="removeItem('apks','${a.id}')">Remove</button>
+    </div>
+  `).join('');
+}
+function renderToolAdminList(){
+  const el = document.getElementById('tool-admin-list');
+  if(data.tools.length===0){ el.innerHTML = `<div class="empty-state">No tools yet — add one above.</div>`; return; }
+  el.innerHTML = data.tools.map(t => `
+    <div class="admin-row">
+      <div class="ic">${escapeHtml(t.icon||'🔧')}</div>
+      <div class="info"><div class="n">${escapeHtml(t.name)}</div><div class="l">${escapeHtml(t.link||'')}</div></div>
+      <button class="del-btn" onclick="removeItem('tools','${t.id}')">Remove</button>
+    </div>
+  `).join('');
+}
+function renderCourseAdminList(){
+  const el = document.getElementById('course-admin-list');
+  if(data.courses.length===0){ el.innerHTML = `<div class="empty-state">No courses yet — add one above.</div>`; return; }
+  el.innerHTML = data.courses.map(c => `
+    <div class="admin-row">
+      <div class="ic">🎓</div>
+      <div class="info"><div class="n">${escapeHtml(c.name)}</div><div class="l">${escapeHtml(c.link||'')}</div></div>
+      <button class="del-btn" onclick="removeItem('courses','${c.id}')">Remove</button>
+    </div>
+  `).join('');
+}
+
+async function removeItem(type, id){
+  data[type] = data[type].filter(x => x.id !== id);
+  await saveData();
+  renderAll();
+  showToast('Removed');
+}
+
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s); }
+
+/* ---------- APK DETAIL SHEET ---------- */
+let activeApkLink = '#';
+function openApkSheet(apkId){
+  const apk = data.apks.find(a => a.id === apkId);
+  if(!apk) return;
+  document.getElementById('sheet-icon').innerHTML = apk.icon ? `<img src="${escapeAttr(apk.icon)}" alt="">` : '📱';
+  document.getElementById('sheet-name').textContent = apk.name;
+  activeApkLink = apk.link || '#';
+  document.getElementById('apk-sheet-overlay').classList.add('active');
+}
+document.getElementById('sheet-close-btn').addEventListener('click', () => {
+  document.getElementById('apk-sheet-overlay').classList.remove('active');
+});
+document.getElementById('apk-sheet-overlay').addEventListener('click', (e) => {
+  if(e.target.id === 'apk-sheet-overlay') document.getElementById('apk-sheet-overlay').classList.remove('active');
+});
+document.getElementById('sheet-download-btn').addEventListener('click', () => {
+  if(activeApkLink && activeApkLink !== '#'){
+    window.open(activeApkLink, '_blank');
+  }else{
+    showToast('No download link set for this app');
+  }
+});
+
+/* ---------- FLOW: SPLASH -> ACCESS ---------- */
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadData();
+  setTimeout(()=>{ showScreen('access-screen'); }, 2200);
+});
+
+document.getElementById('continue-guest-btn').addEventListener('click', () => {
+  showScreen('verify-screen');
+});
+
+document.getElementById('join-tg-btn').addEventListener('click', () => {
+  window.open(data.telegramLink || 'https://t.me/', '_blank');
+  verified.tg = true;
+  document.getElementById('join-tg-btn').classList.add('done');
+});
+document.getElementById('join-wa-btn').addEventListener('click', () => {
+  window.open(data.whatsappLink || 'https://chat.whatsapp.com/', '_blank');
+  verified.wa = true;
+  document.getElementById('join-wa-btn').classList.add('done');
+});
+document.getElementById('verify-status-btn').addEventListener('click', () => {
+  const btn = document.getElementById('verify-status-btn');
+  if(verified.tg && verified.wa){
+    btn.textContent = '✓ Verified';
+    btn.classList.add('done');
+    document.getElementById('enter-vault-btn').style.display = 'block';
+  }else{
+    showToast('Join both channels first');
+  }
+});
+document.getElementById('enter-vault-btn').addEventListener('click', () => {
+  showScreen('dashboard-screen');
+});
+
+document.getElementById('terminate-btn').addEventListener('click', () => {
+  verified = { tg:false, wa:false };
+  document.getElementById('join-tg-btn').classList.remove('done');
+  document.getElementById('join-wa-btn').classList.remove('done');
+  document.getElementById('verify-status-btn').textContent = 'Verify Join Status';
+  document.getElementById('verify-status-btn').classList.remove('done');
+  document.getElementById('enter-vault-btn').style.display = 'none';
+  showScreen('access-screen');
+});
+
+/* ---------- BOTTOM NAV ---------- */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('panel-' + item.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- SEARCH (filters APK grid + lists by name) ---------- */
+document.getElementById('search-input').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('#apks-grid .apk-card').forEach(c=>{
+    c.style.display = c.querySelector('.apk-name').textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('#tools-list .list-row, #courses-list .list-row').forEach(r=>{
+    r.style.display = r.querySelector('.t').textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+/* ---------- ADMIN LOGIN ---------- */
+document.getElementById('admin-link').addEventListener('click', () => {
+  document.getElementById('admin-modal').classList.add('active');
+});
+document.getElementById('admin-cancel-btn').addEventListener('click', () => {
+  document.getElementById('admin-modal').classList.remove('active');
+  document.getElementById('admin-pass-input').value = '';
+});
+document.getElementById('admin-login-btn').addEventListener('click', () => {
+  const val = document.getElementById('admin-pass-input').value;
+  if(val === data.adminPassword){
+    document.getElementById('admin-modal').classList.remove('active');
+    document.getElementById('admin-pass-input').value = '';
+    prefillSettings();
+    showScreen('admin-screen');
+  }else{
+    showToast('Incorrect password');
+  }
+});
+document.getElementById('admin-exit-btn').addEventListener('click', () => {
+  showScreen('dashboard-screen');
+});
+
+function prefillSettings(){
+  document.getElementById('set-brand').value = data.brand;
+  document.getElementById('set-tg').value = data.telegramLink;
+  document.getElementById('set-wa').value = data.whatsappLink;
+  document.getElementById('set-pass').value = '';
+  document.getElementById('set-logo').value = '';
+  const preview = document.getElementById('set-logo-preview');
+  const current = data.splashLogo || DEFAULT_LOGO;
+  preview.innerHTML = current.indexOf('REPLACE') === -1
+    ? `<img src="${current}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1px solid var(--cyan);">`
+    : '';
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('set-logo').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsDataURL(file);
+    pendingLogoUpload = dataUrl;
+    document.getElementById('set-logo-preview').innerHTML =
+      `<img src="${dataUrl}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1px solid var(--cyan);">`;
+  }catch(err){
+    showToast('Could not read image');
+  }
+});
+let pendingLogoUpload = null;
+
+/* ---------- ADMIN TABS ---------- */
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.admin-panel-tab').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('atab-' + tab.dataset.atab).classList.add('active');
+  });
+});
+
+/* ---------- ADMIN: ADD ITEMS ---------- */
+let pendingApkIconUpload = null;
+document.getElementById('apk-icon-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsDataURL(file);
+    pendingApkIconUpload = dataUrl;
+    document.getElementById('apk-icon-preview').innerHTML =
+      `<img src="${dataUrl}" style="width:54px;height:54px;border-radius:12px;object-fit:cover;border:1px solid var(--cyan);">`;
+  }catch(err){
+    showToast('Could not read image');
+  }
+});
+
+document.getElementById('apk-add-btn').addEventListener('click', async () => {
+  const name = document.getElementById('apk-name').value.trim();
+  if(!name){ showToast('Enter an app name'); return; }
+  data.apks.push({
+    id: uid(),
+    name,
+    icon: pendingApkIconUpload || document.getElementById('apk-icon').value.trim(),
+    link: document.getElementById('apk-link').value.trim(),
+    badge: document.getElementById('apk-badge').value.trim() || 'APK/APP'
+  });
+  ['apk-name','apk-icon','apk-link'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('apk-badge').value = 'APK/APP';
+  document.getElementById('apk-icon-file').value = '';
+  document.getElementById('apk-icon-preview').innerHTML = '';
+  pendingApkIconUpload = null;
+  await saveData();
+  renderAll();
+  showToast('APK added');
+});
+
+document.getElementById('tool-add-btn').addEventListener('click', async () => {
+  const name = document.getElementById('tool-name').value.trim();
+  if(!name){ showToast('Enter a tool name'); return; }
+  data.tools.push({
+    id: uid(),
+    name,
+    icon: document.getElementById('tool-icon').value.trim() || '🔧',
+    link: document.getElementById('tool-link').value.trim()
+  });
+  document.getElementById('tool-name').value='';
+  document.getElementById('tool-link').value='';
+  document.getElementById('tool-icon').value='🔧';
+  await saveData();
+  renderAll();
+  showToast('Tool added');
+});
+
+document.getElementById('course-add-btn').addEventListener('click', async () => {
+  const name = document.getElementById('course-name').value.trim();
+  if(!name){ showToast('Enter a course name'); return; }
+  data.courses.push({
+    id: uid(),
+    name,
+    desc: document.getElementById('course-desc').value.trim(),
+    link: document.getElementById('course-link').value.trim()
+  });
+  document.getElementById('course-name').value='';
+  document.getElementById('course-desc').value='';
+  document.getElementById('course-link').value='';
+  await saveData();
+  renderAll();
+  showToast('Course added');
+});
+
+document.getElementById('settings-save-btn').addEventListener('click', async () => {
+  const brand = document.getElementById('set-brand').value.trim();
+  if(brand) data.brand = brand;
+  data.telegramLink = document.getElementById('set-tg').value.trim() || data.telegramLink;
+  data.whatsappLink = document.getElementById('set-wa').value.trim() || data.whatsappLink;
+  if(pendingLogoUpload){
+    data.splashLogo = pendingLogoUpload;
+    pendingLogoUpload = null;
+  }
+  const newPass = document.getElementById('set-pass').value.trim();
+  if(newPass) data.adminPassword = newPass;
+  await saveData();
+  applyBranding();
+  document.getElementById('set-pass').value = '';
+  showToast('Settings saved');
+});
+</script>
+</body>
+</html>
